@@ -80,7 +80,7 @@ bool validateWUX(char* wud1Path, char* wud2Path)
 	unsigned char* tempBufferWUD2 = (unsigned char*)malloc(tempBufferSize); 
 	bool dataMismatch = false;
 	int pct = -1;
-	printf("0%\r");
+	printf("0%%\r");
 	while( currentValidationOffset < wud1Size )
 	{
 		// calculate how many bytes we are reading in this cycle
@@ -135,15 +135,15 @@ bool compressWUD(wud_t* inputFile, FILE* outputFile, char* outputPath)
 	unsigned int sectorTableEntryCount = (unsigned int)((inputSize+SECTOR_SIZE-1) / (long long)SECTOR_SIZE);
 
 	// remember current seek offset, this is where the index table will be written after compression is done
-	long long offsetIndexTable = _ftelli64(outputFile);
+	long long offsetIndexTable = ftello64(outputFile);
 	// skip index table and padding
 	long long offsetSectorArrayStart = (offsetIndexTable + (long long)sectorTableEntryCount*sizeof(unsigned int));
 	// align to SECTOR_SIZE
 	offsetSectorArrayStart = (offsetSectorArrayStart + SECTOR_SIZE - 1);
 	offsetSectorArrayStart = offsetSectorArrayStart - (offsetSectorArrayStart%SECTOR_SIZE);
-	_fseeki64(outputFile, offsetSectorArrayStart, SEEK_SET);
+	fseeko64(outputFile, offsetSectorArrayStart, SEEK_SET);
 
-	unsigned int indexTableSize = sizeof(unsigned int) * sectorTableEntryCount;
+	//unsigned int indexTableSize = sizeof(unsigned int) * sectorTableEntryCount;
 	unsigned int* sectorIndexTable = (unsigned int*)malloc(sizeof(unsigned int) * sectorTableEntryCount);
 	unsigned char* sectorHashArray = (unsigned char*)malloc(sizeof(unsigned char) * SECTOR_HASH_SIZE * sectorTableEntryCount);
 	unsigned int uniqueSectorCount = 0;
@@ -191,7 +191,7 @@ bool compressWUD(wud_t* inputFile, FILE* outputFile, char* outputPath)
 		storedSectors++;
 	}
 	printf("100%%   \n");
-	_fseeki64(outputFile, offsetIndexTable, SEEK_SET);
+	fseeko64(outputFile, offsetIndexTable, SEEK_SET);
 	fwrite(sectorIndexTable, sectorTableEntryCount, sizeof(unsigned int), outputFile);
 	fclose(outputFile);
 	puts("done");
@@ -249,7 +249,7 @@ int main(int argc, char *argv[])
 	bool skipVerify = false;
 	for(int i=2; i<argc; i++)
 	{
-		if( stricmp(argv[i], "-noverify") == 0 )
+		if( strcasecmp(argv[i], "-noverify") == 0 )
 		{
 			skipVerify = true;
 		}

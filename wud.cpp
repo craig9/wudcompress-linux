@@ -5,22 +5,22 @@
 
 long long wud_getFileSize64(FILE* file)
 {
-	long long prevSeek = _ftelli64(file);
-	_fseeki64(file, 0, SEEK_END);
-	long long fileSize = _ftelli64(file);
-	_fseeki64(file, prevSeek, SEEK_SET);
+	long long prevSeek = ftello64(file);
+	fseeko64(file, 0, SEEK_END);
+	long long fileSize = ftello64(file);
+	fseeko64(file, prevSeek, SEEK_SET);
 	return fileSize;
 }
 
 long long wud_getCurrentSeek64(FILE* file)
 {
-	long long currentSeek = _ftelli64(file);
+	long long currentSeek = ftello64(file);
 	return currentSeek;
 }
 
 void wud_setCurrentSeek64(FILE* file, long long newSeek)
 {
-	_fseeki64(file, newSeek, SEEK_SET);
+	fseeko64(file, newSeek, SEEK_SET);
 }
 
 /*
@@ -66,7 +66,7 @@ wud_t* wud_open(char* path)
 		wud->offsetSectorArray = (wud->offsetSectorArray + (long long)(wud->sectorSize-1));
 		wud->offsetSectorArray = wud->offsetSectorArray - (wud->offsetSectorArray%(long long)wud->sectorSize);
 		// read index table
-		unsigned int indexTableSize = sizeof(unsigned int) * wud->indexTableEntryCount;
+		//unsigned int indexTableSize = sizeof(unsigned int) * wud->indexTableEntryCount;
 		wud->indexTable = (unsigned int*)malloc(sizeof(unsigned int) * wud->indexTableEntryCount);
 		wud_setCurrentSeek64(wud->fileWud, wud->offsetIndexTable);
 		if( fread(wud->indexTable, sizeof(unsigned int), wud->indexTableEntryCount, wud->fileWud) != wud->indexTableEntryCount )
